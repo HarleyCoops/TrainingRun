@@ -161,7 +161,8 @@ peft_config = LoraConfig(
 model = AutoModelForCausalLM.from_pretrained(
     model_name,
     torch_dtype=torch.bfloat16,
-    attn_implementation="flash_attention_2",
+    # Set attn_implementation to "native" to disable FlashAttention2 for environments without proper GPU support.
+    attn_implementation="native",
     device_map=None
 ).to("cuda")
         
