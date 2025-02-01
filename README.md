@@ -4,25 +4,41 @@
 
 1. **Clone the repository:**
    ```bash
-   git clone <repository_url>
-   cd <repository_directory>
+   git clone https://github.com/HarleyCoops/TrainingRun.git
+   cd TrainingRun
    ```
 
-2. **Set up the environment:**
-   - Install Python dependencies:
+2. **Create and activate a virtual environment:**
+   - **On Windows:**
      ```bash
-     pip install -r requirements.txt
+     python -m venv venv
+     venv\Scripts\activate
      ```
-   - Ensure your `.env` file is configured with your API keys (e.g., WandB API key).
+   - **On macOS/Linux:**
+     ```bash
+     python3 -m venv venv
+     source venv/bin/activate
+     ```
 
-3. **Run the training script:**
+3. **Install the dependencies:**
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+4. **Configure your environment:**
+   - Edit the `.env` file in the repository root and add your API keys (for example, your WandB API key):
+     ```
+     WANDB_API_KEY=your_api_key_here
+     ```
+
+5. **Run the training script:**
    ```bash
    python grpo_demo.py
    ```
-   This will start the training process and log metrics to Weights & Biases.
+   This will launch the training process and log detailed metrics to Weights & Biases.
 
-4. **For Notebook Users:**
-   - Open the companion Colab notebook `colab_notebook.ipynb` to load the fine-tuned model, run inference tests, and visualize performance metrics interactively.
+6. **For Notebook Users:**
+   - Open the companion Colab notebook `colab_notebook.ipynb` in Google Colab. Follow the included instructions to load the fine-tuned model, run inference tests, and visualize training performance metrics interactively.
 
 Enjoy experimenting with the GRPO fine-tuning demo!
 
