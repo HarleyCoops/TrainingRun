@@ -76,13 +76,9 @@ The following key libraries and frameworks are used:
 
 ## Dataset Overview
 
-We use a variant of the GSM8K dataset, adapted to match the Stoney Nakoda Q&A dataset characteristics. Key dataset fields include:
-- **question**: Contains the user prompt.
-- **answer**: Contains the expected answer (extracted via a hash-based or XML format).
-- **generated_at**: Timestamp metadata.
-- **pair_id**: Unique identifier for each Q&A pair.
+The training script currently uses the GSM8k dataset provided by OpenAI, which consists of elementary-level mathematical word problems. In this setup, the GSM8k dataset is loaded and its questions and answers are formatted for fine-tuning. 
 
-The dataset is processed with custom functions to format prompts (with XML chain-of-thought cues) and extract answers, ensuring consistency and structure.
+*Note:* While future iterations will explore adapting and fine-tuning on the Stoney Nakoda Q&A dataset, the current focus is on getting the GSM8k-based training pipeline up and running.
 
 ---
 
