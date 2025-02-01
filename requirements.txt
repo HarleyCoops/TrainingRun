@@ -1,6 +1,9 @@
+cmake
 torch
-transformers
+transformers==4.48.2
 datasets
-peft
+peft==0.13.0
 trl
 wandb
+huggingface-hub==0.17.3
+vllm==0.6.6.post1

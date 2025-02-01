@@ -1,5 +1,23 @@
 # train_grpo.py
+import sys
+# Workaround for Windows: the 'resource' module is available on Unix systems.
+if sys.platform == "win32":
+    import types
+    resource = types.ModuleType("resource")
+    # Minimal dummy implementation for resource.getrusage
+    resource.getrusage = lambda x: None
+    sys.modules["resource"] = resource
+
 import re
+# Workaround for Windows: Provide a dummy vllm._C module if missing
+if sys.platform == "win32":
+    try:
+        import vllm._C
+    except ModuleNotFoundError:
+        import types
+        dummy_vllm_C = types.ModuleType("vllm._C")
+        dummy_vllm_C.__version__ = "dummy"
+        sys.modules["vllm._C"] = dummy_vllm_C
 import torch
 from datasets import load_dataset, Dataset
 from transformers import AutoTokenizer, AutoModelForCausalLM

@@ -14,7 +14,7 @@
      python -m venv venv
      venv\Scripts\activate
      ```
-   - **On macOS/Linux:**
+   - **On macOS/Linux/WSL:**
      ```bash
      python3 -m venv venv
      source venv/bin/activate
@@ -24,6 +24,10 @@
    ```bash
    pip install -r requirements.txt
    ```
+   *For WSL, use:* 
+   ```bash
+   python3 -m pip install -r requirements.txt
+   ```
 
 4. **Configure your environment:**
    - Edit the `.env` file in the repository root and add your API keys (for example, your WandB API key):
@@ -32,23 +36,69 @@
      ```
 
 5. **Run the training script:**
-   ```bash
-   python grpo_demo.py
-   ```
-   This will launch the training process and log detailed metrics to Weights & Biases.
+   - **Using a Virtual Environment:**
+     ```bash
+     python grpo_demo.py
+     ```
+     *In WSL, use:*
+     ```bash
+     python3 grpo_demo.py
+     ```
 
 6. **For Notebook Users:**
    - Open the companion Colab notebook `colab_notebook.ipynb` in Google Colab. Follow the included instructions to load the fine-tuned model, run inference tests, and visualize training performance metrics interactively.
 
-Enjoy experimenting with the GRPO fine-tuning demo!
+7. **For WSL Users (on Windows):**
+   - Open your WSL terminal.
+   - Verify Python 3 is installed:
+     ```bash
+     python3 --version
+     ```
+     If not installed, run:
+     ```bash
+     sudo apt-get update
+     sudo apt-get install python3 python3-pip
+     ```
+   - Navigate to your project directory (e.g., `/mnt/c/Users/admin/trainingrun`):
+     ```bash
+     cd /mnt/c/Users/admin/trainingrun
+     ```
+   - Install dependencies in WSL:
+     ```bash
+     python3 -m pip install -r requirements.txt
+     ```
+   - Run the training script:
+     ```bash
+     python3 grpo_demo.py
+     ```
 
-This document provides an in-depth roadmap for fine-tuning a LLaMA 1B model using the GRPO (Gradient Reward Policy Optimization) method. It also outlines planned enhancements for performance monitoring, a companion Colab notebook for inference testing, and future directions.
+8. **Quickstart using Docker (Recommended for Isolation):**
+
+   If dependency management proves too challenging, you can use Docker to run the training in an isolated Linux environment:
+
+   - **Install Docker:**  
+     Download and install [Docker Desktop](https://www.docker.com/products/docker-desktop) for your platform.
+
+   - **Build the Docker Image:**  
+     From the project root, run:
+     ```bash
+     docker build -t grpo-finetuning .
+     ```
+
+   - **Run the Docker Container:**  
+     After building the image, start the container with:
+     ```bash
+     docker run --rm -it grpo-finetuning
+     ```
+     This will execute the training script (`grpo_demo.py`) inside a controlled Linux environment, ensuring all dependencies compile and run properly.
+
+Enjoy experimenting with the GRPO fine-tuning demo!
 
 ---
 
 ## Overview
 
-This project demonstrates a self-contained fine-tuning script, `grpo_demo.py`, which uses the GRPO approach to fine-tune a LLaMA 1B (or Qwen 1.5B when applicable) model (base provided by Ollama 1B) on a GSM8K-based dataset. Although the GRPO method is generally more complex, this prototype has been streamlined into a single training script.
+This project demonstrates a self-contained fine-tuning script, `grpo_demo.py`, which uses the GRPO (Gradient Reward Policy Optimization) approach to fine-tune a LLaMA 1B (or Qwen 1.5B when applicable) model (base provided by Ollama 1B) on a GSM8K-based dataset. Although the GRPO method is generally more complex, this prototype has been streamlined into a single training script.
 
 The training process leverages:
 - **Transformers** for model and tokenizer functionality.
@@ -62,23 +112,74 @@ The training process leverages:
 ## Dependencies
 
 The following key libraries and frameworks are used:
-- **torch**: For tensor computations and model training.
-- **transformers**: To load the pre-trained model and tokenizer.
-- **datasets**: For loading and processing the training dataset.
-- **peft**: For low-resource, parameter-efficient fine-tuning (optional/in progress).
-- **trl**: Provides the GRPO training framework.
-- **wandb**: Used for logging training metrics.
-- **re** (Python standard library): For reward function and format checking.
+- **cmake:** For building C extensions.
+- **torch:** For tensor computations and model training.
+- **transformers==4.48.2:** To load the pre-trained model and tokenizer.
+- **datasets:** For loading and processing the training dataset.
+- **peft==0.13.0:** For low-resource, parameter-efficient fine-tuning.
+- **trl:** Provides the GRPO training framework.
+- **wandb:** Used for logging training metrics.
+- **huggingface-hub==0.17.3:** Required for interfacing with Hugging Face.
+- **vllm==0.6.6.post1:** Required by TRL.
 
 > **Note:** Environment variables and API keys are managed via the `.env` file.
+> 
+> ### Windows Build Prerequisites
+> 
+> If you are running on Windows, please ensure you have the following before building vllm:
+> - **CMake:** Install via `pip install cmake` or download the native installer from [cmake.org](https://cmake.org/download/). Ensure CMake is in your system PATH.
+> - **Visual Studio Build Tools:** Confirm that the appropriate compiler tools (e.g., MSVC) are installed and configured.
+> 
+> These prerequisites help ensure that any C extensions (such as vllm._C) build successfully on Windows.
+
+---
+
+## Dependency Conflict Resolution
+
+If you encounter dependency conflicts during installation, try the following steps:
+
+1. **Gradio & MarkupSafe Conflict:**  
+   Gradio requires `markupsafe~=2.0`. If a conflict arises, downgrade MarkupSafe:
+   ```bash
+   pip install markupsafe==2.1.0
+   ```
+
+2. **Litellm & HTTPX Conflict:**  
+   Litellm requires `httpx<0.28.0` (and ≥0.23.0). Downgrade HTTPX if necessary:
+   ```bash
+   pip install httpx==0.27.0
+   ```
+
+3. **Datasets Conflicts:**  
+   The datasets package may require older versions of `dill` and `fsspec`. Resolve by installing:
+   ```bash
+   pip install dill==0.3.8
+   pip install fsspec==2024.9.0
+   ```
+
+4. **Manim & Numpy Conflict:**  
+   Manim requires `numpy>=2.1` (for Python 3.10+). Ensure your numpy version meets this requirement:
+   ```bash
+   pip install numpy>=2.1
+   ```
+
+5. **TensorFlow & Protobuf/Wrapt Conflict:**  
+   TensorFlow (tensorflow-intel) may require specific versions. Downgrade if necessary:
+   ```bash
+   pip install protobuf==3.20.3
+   pip install wrapt==1.14.0
+   ```
+
+6. **Other Conflicts:**  
+   Review the pip install output for any additional errors and adjust package versions accordingly.
 
 ---
 
 ## Dataset Overview
 
-The training script currently uses the GSM8k dataset provided by OpenAI, which consists of elementary-level mathematical word problems. In this setup, the GSM8k dataset is loaded and its questions and answers are formatted for fine-tuning. 
+The training script currently uses the GSM8K dataset provided by OpenAI, which consists of elementary-level mathematical word problems. In this setup, the GSM8K dataset is loaded and its questions and answers are formatted for fine-tuning.
 
-*Note:* While future iterations will explore adapting and fine-tuning on the Stoney Nakoda Q&A dataset, the current focus is on getting the GSM8k-based training pipeline up and running.
+*Note:* While future iterations will explore adapting and fine-tuning on the Stoney Nakoda Q&A dataset, the current focus is on getting the GSM8K-based training pipeline up and running.
 
 ---
 
@@ -88,11 +189,18 @@ The training script currently uses the GSM8k dataset provided by OpenAI, which c
 The training script (`grpo_demo.py`) uses Weights & Biases (WandB) for logging metrics. Logging is configured to provide frequent updates on training progress, including hyperparameters, system metrics, and live training stats.
 
 ### Weights & Biases Integration
-Weights & Biases' tools enable you to quickly track experiments, visualize results, and identify model regressions. The integration involves:
-- **Installation**: Install the WandB library (`pip install wandb`).
-- **Setup**: Log in using `wandb login` with your API key (stored in the .env file).
-- **Logging**: The training script initializes a WandB run with configuration details (e.g., learning rate, batch size, epochs, run name). During training, relevant metrics such as loss and accuracy are logged, allowing for real-time visualization within the WandB dashboard.
-- **Example Code**:
+WandB enables you to quickly track experiments, visualize results, and identify model regressions. The integration involves:
+- **Installation:** Install WandB using:
+  ```bash
+  pip install wandb
+  ```
+- **Setup:** Log in using:
+  ```bash
+  wandb login
+  ```
+  with your API key (managed in your `.env` file).
+- **Logging:** The training script initializes a WandB run with configuration details (e.g., learning rate, batch size, epochs, run name). During training, relevant metrics such as loss and accuracy are logged for real-time visualization.
+- **Example Code:**
   ```python
   import wandb
   wandb.init(
@@ -109,23 +217,23 @@ Weights & Biases' tools enable you to quickly track experiments, visualize resul
       }
   )
   ```
-- **Tracking**: As the model trains, WandB logs are updated in real time, allowing you to monitor training dynamics and system performance.
+- **Tracking:** As the model trains, WandB logs are updated in real time, allowing you to monitor training dynamics and system performance.
 
 ### Planned Enhancements
-Beyond the current WandB setup, additional monitoring improvements include:
-- **Integrate TensorBoard**: Use `torch.utils.tensorboard.SummaryWriter` as an alternative or supplementary visualization tool.
-- **Explore Gradio Dashboards**: Investigate the use of Gradio for interactive live monitoring interfaces.
-- **Enhanced Callbacks**: Expand logging to capture additional metrics such as gradient norms, learning rate changes, and custom performance indicators.
+Beyond the current WandB setup, future improvements include:
+- **Integrate TensorBoard:** Use `torch.utils.tensorboard.SummaryWriter` for supplementary visualization.
+- **Explore Gradio Dashboards:** Investigate Gradio for interactive live monitoring interfaces.
+- **Enhanced Callbacks:** Expand logging to capture additional metrics such as gradient norms and learning rate changes.
 
 ---
 
 ## Companion Colab Notebook
 
 A companion Colab notebook will be created that:
-- **Loads the Fine-Tuned Model**: Provides code cells for loading the model and tokenizer.
-- **Runs Inference Tests**: Allows users to input prompts and observe model responses interactively.
-- **Displays Live Performance Metrics**: Embeds code to visualize training performance using libraries like Matplotlib, Plotly, or integrated dashboard tools from Hugging Face.
-- **Contains Step-by-Step Instructions**: Guides users through replicating the training environment, setting up API keys, and running inference.
+- **Loads the Fine-Tuned Model:** Provides cells for loading the model and tokenizer.
+- **Runs Inference Tests:** Allows interactive prompt input and model response observation.
+- **Displays Live Performance Metrics:** Embeds visualizations using libraries such as Matplotlib, Plotly, or built-in dashboard tools.
+- **Contains Step-by-Step Instructions:** Guides users through replicating the training environment and executing inference.
 
 ---
 
@@ -135,26 +243,26 @@ This roadmap builds on and is inspired by several foundational works in reward o
 
 1. **Group Robust Preference Optimization in Reward-free RLHF**  
    [https://arxiv.org/abs/2405.20304](https://arxiv.org/abs/2405.20304)  
-   This paper introduces robust strategies for optimizing preferences even without explicit reward signals, laying a theoretical foundation for group-level optimization in RLHF scenarios.
+   This paper introduces robust strategies for optimizing preferences without explicit rewards, providing a theoretical foundation for group-level optimization.
 
 2. **DeepSeekMath: Pushing the Limits of Mathematical Reasoning in Open Language Models**  
    [https://arxiv.org/abs/2402.03300](https://arxiv.org/abs/2402.03300)  
-   Here, advanced techniques for enhancing the reasoning capabilities of language models are proposed, which complement the fine-tuning strategies in our GRPO approach.
+   This work proposes advanced techniques for boosting the reasoning capabilities of language models, informing our fine-tuning strategy.
 
 3. **REINFORCE++: A Simple and Efficient Approach for Aligning Large Language Models**  
    [https://arxiv.org/abs/2501.03262](https://arxiv.org/abs/2501.03262)  
-   This work offers a streamlined method for aligning language models using reinforcement learning, influencing our implementation of the GRPOTrainer configuration.
+   This paper presents a streamlined method for aligning language models using reinforcement learning, influencing our GRPOTrainer configuration.
 
 4. **DeepSeek-R1: Incentivizing Reasoning Capability in LLMs via Reinforcement Learning**  
    [https://arxiv.org/abs/2501.12948](https://arxiv.org/abs/2501.12948)  
-   This paper explores reinforcement learning strategies specifically aimed at boosting reasoning performance in large language models, providing practical insights for future enhancements.
+   This work explores reinforcement learning strategies for enhancing reasoning performance in large language models and offers practical insights for future enhancements.
 
-Future directions will build upon these insights to further refine model alignment, enhance reasoning capabilities, and improve parameter efficiency. Moreover, we plan to incorporate iterative community feedback to ensure the approach remains robust and scalable.
+Future directions will leverage these insights to further refine model alignment, enhance reasoning capabilities, and improve parameter efficiency. We also plan to incorporate community feedback iteratively to ensure the approach remains scalable and robust.
 
 ---
 
 ## Conclusion
 
-This roadmap sets forth a comprehensive plan for understanding the current code, evaluating the data structure used for fine-tuning, and building enhancements to monitor overall performance – both in the training script and via a companion Colab notebook. The document serves as a guide for both immediate implementation improvements and long-term research directions in low-resource language model fine-tuning.
+This roadmap provides a comprehensive plan for running your GRPO fine-tuning code. It outlines two approaches: using a virtual environment in WSL and using Docker for a fully isolated Linux environment. Follow the provided instructions to set up your environment, install dependencies, and run your training script.
 
 Happy fine-tuning!
