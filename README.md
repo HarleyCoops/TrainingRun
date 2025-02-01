@@ -131,17 +131,25 @@ A companion Colab notebook will be created that:
 
 ## Academic-Level Discussion & Future Directions
 
-In the spirit of rigorous academic inquiry, this roadmap contextualizes our GRPO-based fine-tuning within frameworks found in [archivx](https://archivx.org). Key discussion points include:
-- **Theoretical Background**: A review of reward-driven policy optimization and its adaptation for language model fine-tuning.
-- **Comparative Analysis**: Insights on how this streamlined approach compares with more complex GRPO implementations.
-- **Parameter Efficiency**: Discussion on the role and future enhancements using PEFT.
-- **Community-in-the-Loop**: Outlining the potential for iterative refinement with community feedback and continual learning.
+This roadmap builds on and is inspired by several foundational works in reward optimization, reinforcement learning, and alignment for language models. Key papers that inform the design and future extensions of the GRPO method include:
 
-Future work will examine:
-- Expanding the dataset (e.g., finalizing an 85k line version).
-- Fine-tuning on larger models and comparing performance.
-- Detailed analysis of training metrics and visualizations to drive further methodological refinements.
-- Potential integration with Gradio or Hugging Face performance tools for enhanced monitoring.
+1. **Group Robust Preference Optimization in Reward-free RLHF**  
+   [https://arxiv.org/abs/2405.20304](https://arxiv.org/abs/2405.20304)  
+   This paper introduces robust strategies for optimizing preferences even without explicit reward signals, laying a theoretical foundation for group-level optimization in RLHF scenarios.
+
+2. **DeepSeekMath: Pushing the Limits of Mathematical Reasoning in Open Language Models**  
+   [https://arxiv.org/abs/2402.03300](https://arxiv.org/abs/2402.03300)  
+   Here, advanced techniques for enhancing the reasoning capabilities of language models are proposed, which complement the fine-tuning strategies in our GRPO approach.
+
+3. **REINFORCE++: A Simple and Efficient Approach for Aligning Large Language Models**  
+   [https://arxiv.org/abs/2501.03262](https://arxiv.org/abs/2501.03262)  
+   This work offers a streamlined method for aligning language models using reinforcement learning, influencing our implementation of the GRPOTrainer configuration.
+
+4. **DeepSeek-R1: Incentivizing Reasoning Capability in LLMs via Reinforcement Learning**  
+   [https://arxiv.org/abs/2501.12948](https://arxiv.org/abs/2501.12948)  
+   This paper explores reinforcement learning strategies specifically aimed at boosting reasoning performance in large language models, providing practical insights for future enhancements.
+
+Future directions will build upon these insights to further refine model alignment, enhance reasoning capabilities, and improve parameter efficiency. Moreover, we plan to incorporate iterative community feedback to ensure the approach remains robust and scalable.
 
 ---
 
