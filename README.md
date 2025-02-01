@@ -1,5 +1,31 @@
 # GRPO Fine-Tuning Demo Roadmap
 
+## Quickstart
+
+1. **Clone the repository:**
+   ```bash
+   git clone <repository_url>
+   cd <repository_directory>
+   ```
+
+2. **Set up the environment:**
+   - Install Python dependencies:
+     ```bash
+     pip install -r requirements.txt
+     ```
+   - Ensure your `.env` file is configured with your API keys (e.g., WandB API key).
+
+3. **Run the training script:**
+   ```bash
+   python grpo_demo.py
+   ```
+   This will start the training process and log metrics to Weights & Biases.
+
+4. **For Notebook Users:**
+   - Open the companion Colab notebook `colab_notebook.ipynb` to load the fine-tuned model, run inference tests, and visualize performance metrics interactively.
+
+Enjoy experimenting with the GRPO fine-tuning demo!
+
 This document provides an in-depth roadmap for fine-tuning a LLaMA 1B model using the GRPO (Gradient Reward Policy Optimization) method. It also outlines planned enhancements for performance monitoring, a companion Colab notebook for inference testing, and future directions.
 
 ---
@@ -47,15 +73,37 @@ The dataset is processed with custom functions to format prompts (with XML chain
 ## Training Performance Monitoring
 
 ### Current Setup
-The training script (`grpo_demo.py`) uses `wandb` for logging metrics. Logging is configured (e.g., `logging_steps=1`), providing frequent updates on training progress.
+The training script (`grpo_demo.py`) uses Weights & Biases (WandB) for logging metrics. Logging is configured to provide frequent updates on training progress, including hyperparameters, system metrics, and live training stats.
+
+### Weights & Biases Integration
+Weights & Biases' tools enable you to quickly track experiments, visualize results, and identify model regressions. The integration involves:
+- **Installation**: Install the WandB library (`pip install wandb`).
+- **Setup**: Log in using `wandb login` with your API key (stored in the .env file).
+- **Logging**: The training script initializes a WandB run with configuration details (e.g., learning rate, batch size, epochs, run name). During training, relevant metrics such as loss and accuracy are logged, allowing for real-time visualization within the WandB dashboard.
+- **Example Code**:
+  ```python
+  import wandb
+  wandb.init(
+      project="GRPO-Fine-Tuning",
+      config={
+           "learning_rate": training_args.learning_rate,
+           "adam_beta1": training_args.adam_beta1,
+           "adam_beta2": training_args.adam_beta2,
+           "weight_decay": training_args.weight_decay,
+           "warmup_ratio": training_args.warmup_ratio,
+           "batch_size": training_args.per_device_train_batch_size,
+           "num_train_epochs": training_args.num_train_epochs,
+           "run_name": training_args.run_name
+      }
+  )
+  ```
+- **Tracking**: As the model trains, WandB logs are updated in real time, allowing you to monitor training dynamics and system performance.
 
 ### Planned Enhancements
-To further visualize performance during training, we plan to:
-- **Integrate TensorBoard**: Utilize `torch.utils.tensorboard.SummaryWriter` for real-time visualization of loss curves, training dynamics, and resource usage.
-- **Explore Gradio Dashboards**: Investigate if Gradio can provide a lightweight interface for live training monitoring or integrate existing Hugging Face tools for this purpose.
-- **Dashboard Callbacks**: Modify the training loop (or GRPOTrainer callbacks) to emit additional metrics (e.g., loss, gradient norms, learning rate changes) to the chosen dashboard.
-
-All proposed modifications are documented here as groundwork for future enhancements.
+Beyond the current WandB setup, additional monitoring improvements include:
+- **Integrate TensorBoard**: Use `torch.utils.tensorboard.SummaryWriter` as an alternative or supplementary visualization tool.
+- **Explore Gradio Dashboards**: Investigate the use of Gradio for interactive live monitoring interfaces.
+- **Enhanced Callbacks**: Expand logging to capture additional metrics such as gradient norms, learning rate changes, and custom performance indicators.
 
 ---
 

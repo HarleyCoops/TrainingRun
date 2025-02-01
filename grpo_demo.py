@@ -164,4 +164,19 @@ trainer = GRPOTrainer(
     train_dataset=dataset,
     #peft_config=peft_config
 )
+import wandb
+wandb.init(
+    project="GRPO-Fine-Tuning",
+    config={
+         "learning_rate": training_args.learning_rate,
+         "adam_beta1": training_args.adam_beta1,
+         "adam_beta2": training_args.adam_beta2,
+         "weight_decay": training_args.weight_decay,
+         "warmup_ratio": training_args.warmup_ratio,
+         "batch_size": training_args.per_device_train_batch_size,
+         "num_train_epochs": training_args.num_train_epochs,
+         "run_name": training_args.run_name
+    }
+)
 trainer.train()
+wandb.finish()
