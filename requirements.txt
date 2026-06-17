@@ -1,9 +1,9 @@
 cmake
 torch
-transformers==4.48.2
+transformers==5.12.1
 datasets
-peft==0.13.0
+peft==0.19.1
 trl
 wandb
 flash-attn
-vllm==0.6.6.post1
+vllm==0.23.0
