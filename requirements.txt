@@ -1,6 +1,6 @@
 cmake
 torch
-transformers==4.48.2
+transformers==5.0.0rc3
 datasets
 peft==0.13.0
 trl
