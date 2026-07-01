@@ -6,4 +6,4 @@ peft==0.13.0
 trl
 wandb
 flash-attn
-vllm==0.6.6.post1
+vllm==0.24.0
